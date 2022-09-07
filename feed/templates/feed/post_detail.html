@@ -1,0 +1,119 @@
+{% extends "feed/base.html" %}
+{% block content %}
+  {% include "feed/navbar.html" %}
+    <div class="py-5 mx-4 d-flex flex-column align-items-center">
+      <div class="card flex-row" style="height: 598px; max-width: 100%; max-height: 70vw">
+        <div class="border-right page-container" style="height: 100%; max-width: 50vw">
+          <img src="{{ post.image.url }}" style="height: 100%; width: 100%; object-fit: contain">
+        </div>
+        <div class="d-flex flex-column justify-content-between" style="width: 335px;">
+          <div id="comment-header" class="p-3 d-flex align-items-center border-bottom">
+            <a class="mr-3" href="{% url 'profile' post.author.username %}">
+              <img class="rounded-circle profile-post-image" src="{{ post.author.profile.pic.url }}"/>
+            </a>
+            <a class="no-hover-underline" href="{% url 'profile' post.author.username %}">
+              <h6>{{ post.author }}</h6>
+            </a>
+            <button class="btn btn-link mr-3 bg-transparent no-border p-0 m-0 cursor-pointer" style="position: absolute; right: 0; line-height: 0" data-toggle="modal" data-target="#postOptionsModal-{{ post.id }}">
+              <svg aria-label="More options" class="_ab6-" color="#262626" fill="#262626" height="24" role="img" viewBox="0 0 24 24" width="24"><circle cx="12" cy="12" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle></svg>
+            </button>
+          </div>
+          <div id="comment-section" class="pl-1 pr-3 pt-2 pb-1 comment-scroll d-none">
+            {% include 'feed/comment-section.html' %}
+          </div>
+          <div id="comment-footer">
+            <div class="p-3 border-top">
+              <div>
+                <form action="{% url 'like-post' post.id %}" id="like-form" class="d-none">{% csrf_token %}</form>
+                <a onclick="document.getElementById('like-form').onsubmit()"><i id="heart"{% if user in post.likes.all %} fill="black" {% endif %} data-feather="heart"></i></a>
+                <a onclick="document.getElementById('comment-input').focus()"><i data-feather="message-circle" class="mx-3"></i></a>
+                <a><i data-feather="send"></i></a>
+              </div>
+              <div id="like-section" class="mt-2">
+                {% include 'feed/like-section.html' %}
+              </div>
+              <div class="mt-2 text-secondary">
+                <small>{{ post.date_posted|date:"F d, Y" }}</small>
+              </div>
+            </div>
+            <div class="border-top">
+              <form action="{% url 'add-comment' post.id %}" id="comment-form" class="d-flex flex-row align-items-start p-3" method="POST">
+                {% csrf_token %}
+                  <textarea id="comment-input" name="comment-input" required class="form-control no-border comment-scroll p-0" style="resize: none;" placeholder="Add a comment..."></textarea>
+                  <button type="submit" class="btn btn-link p-0 stronger">Post</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock content %}
+{% block script %}
+{% include 'feed/post_options_modal.html' %}
+<script>
+    const setCommentHeight = () => {
+        const header = document.getElementById("comment-header")
+        const footer = document.getElementById("comment-footer")
+        const comment_section = document.getElementById("comment-section")
+        const height = footer.offsetTop - header.offsetTop - header.offsetHeight
+        comment_section.style.height = height + "px"
+        comment_section.style.top = header.offsetHeight + "px"
+        comment_section.classList.remove("d-none")
+    }
+    setCommentHeight()
+    onresize = setCommentHeight
+
+    submitFormWithoutReload(
+        document.getElementById("comment-form"),
+        event => {
+            const request = event.target
+            if (request.status === 200)
+                var commentSection = document.getElementById("comment-section")
+                commentSection.innerHTML = request.response
+                commentSection.scrollTop = commentSection.scrollHeight
+                document.getElementById("comment-form").reset()
+        }
+    )
+
+    submitFormWithoutReload(
+        document.getElementById("like-form"),
+        event => {
+            const request = event.target
+            if (request.status === 200)
+                document.getElementById("like-section").innerHTML = request.response
+                const heart = document.getElementById("heart")
+                const style = window.getComputedStyle(heart)
+                if (style.fill === 'none')
+                    heart.style.fill = 'black'
+                else
+                    heart.style.fill = 'none'
+        }
+    )
+
+
+    const followPostUser = postId => {
+        const form = document.getElementById('follow-form-' + postId)
+        const request = createPostRequest(form.action, new FormData(form))
+        request.onload = () => {
+            if (request.status === 200) {
+                document.getElementById("unfollow-form-" + postId).classList.remove("d-none")
+                document.getElementById("follow-form-" + postId).classList.add("d-none")
+            }
+            document.getElementById('close-modal-' + postId).click()
+        }
+    }
+
+    const unfollowPostUser = postId => {
+        const form = document.getElementById('unfollow-form-' + postId)
+        const request = createPostRequest(form.action, new FormData(form))
+        request.onload = () => {
+            if (request.status === 200) {
+                document.getElementById("follow-form-" + postId).classList.remove("d-none")
+                document.getElementById("unfollow-form-" + postId).classList.add("d-none")
+            }
+            document.getElementById('close-modal-' + postId).click()
+        }
+    }
+
+
+</script>{% endblock script %}

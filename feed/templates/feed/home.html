@@ -1,0 +1,92 @@
+{% extends "feed/base.html" %}
+{% block content %}
+  {% include "feed/navbar.html" %}
+  <div class="d-flex flex-column align-items-center pt-3">
+    {% for post in posts %}
+      <div class="card my-2" style="width: 34rem;">
+        <div class="px-3 py-2 d-flex align-items-center border-bottom">
+          <a class="mr-2" href="{% url 'profile' post.author.username %}">
+            <img class="rounded-circle profile-post-image" src="{{ post.author.profile.pic.url }}"/>
+          </a>
+          <a class="no-hover-underline" href="{% url 'profile' post.author.username %}">
+            <h6>{{ post.author }}</h6>
+          </a>
+          <button class="btn btn-link mr-3 bg-transparent no-border p-0 m-0 cursor-pointer" style="position: absolute; right: 0; line-height: 0" data-toggle="modal" data-target="#postOptionsModal-{{ post.id }}">
+            <svg aria-label="More options" class="_ab6-" color="#262626" fill="#262626" height="24" role="img" viewBox="0 0 24 24" width="24"><circle cx="12" cy="12" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle></svg>
+          </button>
+        </div>
+        <img src="{{ post.image.url }}">
+        <div class="p-3 border-top">
+          <div>
+            <form action="{% url 'like-post' post.id %}" id="like-form-{{ post.id }}" class="d-none">{% csrf_token %}</form>
+            <a onclick="likePost( {{ post.id }})"><i id="heart-{{ post.id }}"{% if user in post.likes.all %} fill="black" {% endif %} data-feather="heart"></i></a>
+            <a href="{% url 'post-detail' post.id %}"><i data-feather="message-circle" class="mx-3"></i></a>
+            <a><i data-feather="send"></i></a>
+          </div>
+          <div id="like-section-{{ post.id }}" class="mt-2">
+            {% include 'feed/like-section.html' %}
+          </div>
+          <div class="mt-2">
+            <p><a class="no-hover-underline" href="{% url 'profile' post.author %}"><strong>{{ post.author }}</strong></a> {{ post.caption }}</p>
+          </div>
+          <div class="mt-2 text-secondary">
+            {% if post.comment_set.count >= 3 %}
+              <a class="no-hover-underline" href="{% url 'post-detail' post.id %}">View all {{ post.comment_set.count }} comments</a>
+            {% endif %}
+          </div>
+          <div class="mt-2">
+            {% if post.comment_set.first %}
+              <p><a class="no-hover-underline" href="{% url 'profile' post.comment_set.first.author %}"><strong>{{ post.comment_set.first.author }}</strong></a> {{ post.comment_set.first.comment }}</p>
+            {% endif %}
+            {% if post.comment_set.count >= 2 %}
+              <p><a class="no-hover-underline" href="{% url 'profile' post.comment_set.last.author %}"><strong>{{ post.comment_set.last.author }}</strong></a> {{ post.comment_set.last.comment }}</p>
+            {% endif %}
+          </div>
+          <div class="mt-2 text-secondary">
+            <small>{{ post.date_posted|date:"F d, Y" }}</small>
+          </div>
+        </div>
+      </div>
+      {% include 'feed/post_options_modal.html' %}
+    {% endfor %}
+  </div>
+{% endblock content %}
+{% block script %}<script>
+    const likePost = (id) => {
+        const form = document.getElementById('like-form-' + id)
+        const request = createPostRequest(form.action, new FormData(form))
+        request.onload = () => {
+            document.getElementById("like-section-" + id).innerHTML = request.response
+            const heart = document.getElementById("heart-" + id)
+            const style = window.getComputedStyle(heart)
+            if (style.fill === 'none') heart.style.fill = 'black'
+            else heart.style.fill = 'none'
+        }
+    }
+
+    const followPostUser = postId => {
+        const form = document.getElementById('follow-form-' + postId)
+        const request = createPostRequest(form.action, new FormData(form))
+        request.onload = () => {
+            if (request.status === 200) {
+                document.getElementById("unfollow-form-" + postId).classList.remove("d-none")
+                document.getElementById("follow-form-" + postId).classList.add("d-none")
+            }
+            document.getElementById('close-modal-' + postId).click()
+        }
+    }
+
+    const unfollowPostUser = postId => {
+        const form = document.getElementById('unfollow-form-' + postId)
+        const request = createPostRequest(form.action, new FormData(form))
+        request.onload = () => {
+            if (request.status === 200) {
+                document.getElementById("follow-form-" + postId).classList.remove("d-none")
+                document.getElementById("unfollow-form-" + postId).classList.add("d-none")
+            }
+            document.getElementById('close-modal-' + postId).click()
+        }
+    }
+
+
+</script>{% endblock script %}

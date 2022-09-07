@@ -1,0 +1,83 @@
+{% extends "feed/base.html" %}
+{% block content %}
+  {% include "feed/navbar.html" %}
+  <div class="mx-auto larger-font-size" style="width: 68rem; max-width: 100vw">
+    <div class="d-flex flex-row border-bottom py-5 px-md-5">
+      <div class="px-4 px-md-5">
+        <img class="rounded-circle profile-image" src="{{ ouser.profile.pic.url }}">
+      </div>
+      <div class="pl-md-5">
+        <div class="d-flex flex-row flex-wrap align-items-center pt-1 pb-4">
+          <h2 class="font-weight-light mb-0 mr-4">{{ ouser.username }}</h2>
+          <div class="d-flex flex-row align-items-center">
+            {% if is_this_user %}
+              <a href="{% url 'profile-edit' %}" class="mr-4 profile-button no-hover-underline">Edit profile</a>
+            {% else %}
+              <form id="unfollow-form" method="POST" action="{% url 'toggle_follow' 'unfollow' ouser.id %}" {% if not ouser.profile in user.profile.following.all %} class="d-none" {% endif %}>
+                {% csrf_token %}
+                <button type="submit" class="p-0 mr-4 profile-button no-hover-underline cursor-pointer">Unfollow</button>
+              </form>
+              <form id="follow-form" method="POST" action="{% url 'toggle_follow' 'follow' ouser.id %}" {% if ouser.profile in user.profile.following.all %} class="d-none" {% endif %}>
+                {% csrf_token %}
+                <button type="submit" class="p-0 mr-4 profile-button no-hover-underline cursor-pointer">Follow</button>
+              </form>
+            {% endif %}
+            {% if is_this_user %}
+              <button class="btn btn-static p-0 bg-transparent" style="line-height: 0" data-toggle="modal" data-target="#settingsOptionsModal">
+                <i class="bi-gear-wide" style="font-size: 24px"></i>
+              </button>
+              {% include 'users/settings_options_modal.html' %}
+            {% endif %}
+          </div>
+        </div>
+        <div class="d-flex flex-row pb-4">
+          <div><span class="stronger">{{ ouser.post_set.count }}</span> {% if ouser.post_set.count == 1 %}post{% else %}posts{% endif %}</div>
+          <div class="mx-2 mx-md-5"><button data-toggle="modal" data-target="#followersModal" class="p-0 m-0 no-border bg-transparent cursor-pointer btn-static"><span id="followers-count" class="stronger">{{ ouser.profile.followers.count }}</span> followers</button></div>
+          <div><button data-toggle="modal" data-target="#followingModal" class="p-0 m-0 no-border bg-transparent cursor-pointer btn-static"><span class="stronger">{{ ouser.profile.following.count }}</span> following</button></div>
+          {% include 'users/userlist_modal.html' with name='followers' users=ouser.profile.followers.all %}
+          {% include 'users/userlist_modal.html' with name='following' users=ouser.profile.following.all %}
+        </div>
+        <div>
+          <strong>{{ ouser.first_name }} {{ ouser.last_name }}</strong>
+          <div>{{ ouser.profile.bio }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="pt-5" style="overflow: hidden">
+      {% for post in ouser.post_set.all %}
+        <div style="width: 33.33%; display: inline-block; float: left; padding-bottom: 3%">
+          <div class="mx-auto" style="position: relative; width: 93%; height: 0; padding-bottom: 93%;">
+            <a href="{% url 'post-detail' post.id %}">
+              <img src="{{ post.image.url }}" style="position: absolute; height: 100%; width: 100%; object-fit: cover">
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="d-flex justify-content-center pb-5">
+      <small class="text-secondary">© 2022 Instagram not from Meta</small>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block script %}<script>
+    submitFormWithoutReload(document.getElementById("unfollow-form"), e => {
+        const request = e.target
+        if (request.status === 200) {
+            document.getElementById("unfollow-form").classList.add("d-none")
+            document.getElementById("follow-form").classList.remove("d-none")
+            const followers = document.getElementById('followers-count').innerText
+            document.getElementById('followers-count').innerText = (followers - 1).toString()
+        }
+    })
+
+    submitFormWithoutReload(document.getElementById("follow-form"), e => {
+        const request = e.target
+        if (request.status === 200) {
+            document.getElementById("unfollow-form").classList.remove("d-none")
+            document.getElementById("follow-form").classList.add("d-none")
+            const followers = document.getElementById('followers-count').innerText
+            document.getElementById('followers-count').innerText = (+followers + 1).toString()
+        }
+    })
+</script>{% endblock script %}

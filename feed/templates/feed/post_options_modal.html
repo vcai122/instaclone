@@ -1,0 +1,31 @@
+<div class="modal" id="postOptionsModal-{{ post.id }}" tabindex="-1" role="dialog" aria-labelledby="postOptionsModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered mx-auto modal-small">
+    <div class="modal-content" style="overflow: hidden">
+        {% if post.author == user %}
+          <form class="list-group-item p-0" method="POST" action="{% url 'delete-post' post.id %}">
+            {% csrf_token %}
+            <button type="submit" class="text-danger btn btn-static bg-transparent w-100 font-weight-bold" style="color: inherit; height: 48px">Delete</button>
+          </form>
+        {% else %}
+          <form id="unfollow-form-{{ post.id }}" method="POST" action="{% url 'toggle_follow' 'unfollow' post.author.id %}" class="list-group-item p-0 {% if not post.author.profile in user.profile.following.all %}d-none{% endif %}">
+            {% csrf_token %}
+            <button type="button" onclick="unfollowPostUser({{ post.id }})" class="text-danger btn btn-static bg-transparent w-100 font-weight-bold" style="color: inherit; height: 48px">Unfollow</button>
+          </form>
+          <form id="follow-form-{{ post.id }}" method="POST" action="{% url 'toggle_follow' 'follow' post.author.id %}" class="list-group-item p-0 {% if post.author.profile in user.profile.following.all %}d-none{% endif %}">
+            {% csrf_token %}
+            <button type="button" onclick="followPostUser({{ post.id }})" class="text-primary btn btn-static bg-transparent w-100 font-weight-bold" style="color: inherit; height: 48px">Follow</button>
+          </form>
+        {% endif %}
+        <a id="to-post-link-{{ post.id }}" class="btn btn-static list-group-item w-100" style="color: inherit; height: 48px" href="{% url 'post-detail' post.id %}">Go to post</a>
+        <button id="copy-link-{{ post.id }}" class="btn btn-static list-group-item w-100" style="color: inherit; height: 48px">Copy link</button>
+        <button id="close-modal-{{ post.id }}" data-dismiss="modal" class="btn btn-static list-group-item w-100" style="color: inherit; height: 48px">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.getElementById("copy-link-{{ post.id }}").onclick = () => {
+        navigator.clipboard.writeText(document.getElementById('to-post-link-{{ post.id }}').href)
+        document.getElementById('close-modal-{{ post.id }}').click()
+    }
+</script>

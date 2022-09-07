@@ -1,0 +1,160 @@
+h6, p {
+    margin: 0;
+}
+
+html {
+    font-size: 14px;
+    overflow-x: hidden;
+}
+
+.page-container {
+    background: rgb(250, 250, 250);
+}
+
+a {
+    color: inherit;
+}
+
+a:hover {
+    color: inherit;
+    cursor: pointer;
+}
+
+.cursor-pointer{
+    cursor: pointer;
+}
+
+ul {
+    list-style: none;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+}
+
+.btn-link:hover{
+    text-decoration: none;
+}
+
+.modal-content {
+    border-radius: 12px;
+}
+
+.smaller {
+    font-size: 12px;
+}
+
+.larger-font-size .smaller {
+    font-size: 14px;
+}
+
+.stronger {
+    font-weight: 600;
+}
+
+.text-info {
+    color: rgb(0, 55, 107) !important;
+}
+
+.larger-font-size {
+    font-size: 16px;
+}
+
+.profile-button, .profile-button:active, .profile-button:focus {
+    height: 2rem;
+    width: 6.5rem;
+    font-size: 14px;
+    font-weight: 500;
+    background: white;
+    outline: 1px solid gainsboro;
+    border: none;
+    border-radius: 5px;
+    margin: auto;
+    text-align: center;
+    line-height: 2rem;
+}
+
+.no-hover-underline:hover {
+    text-decoration: none;
+}
+
+button:active {
+    opacity: 80%;
+}
+
+.profile-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}
+
+.profile-navbar-image {
+    width: 26px;
+    height: 26px;
+    object-fit: cover;
+}
+
+.profile-post-image {
+    width: 33px;
+    height: 33px;
+    min-width: 33px;
+    min-height: 33px;
+    object-fit: cover;
+}
+
+.profile-edit-image {
+    width: 38px;
+    height: 38px;
+    object-fit: cover;
+}
+
+.profile-write-caption-image {
+    width: 28px;
+    height: 28px;
+    object-fit: cover;
+}
+
+.profile-user-list {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+}
+
+.comment-scroll {
+    overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.comment-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+
+.no-border, .no-border:focus{
+    border: 0;
+    box-shadow: none;
+    outline: 0;
+}
+
+.btn-static:active, .btn-static:focus {
+    box-shadow: none;
+    opacity: 100%;
+    outline: 0;
+}
+
+.modal-small {
+    width: 400px;
+}
+
+@media only screen and (max-width: 768px) {
+    .profile-image {
+        width: 90px;
+        height: 90px;
+    }
+
+    .modal-small {
+        width: 260px;
+    }
+}

@@ -1,0 +1,31 @@
+<nav class="navbar sticky-top navbar-light bg-white border-bottom flex-nowrap"><a class="navbar-brand" href={% url 'feed-home' %}><img style="width: 8rem" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/1280px-Instagram_logo.svg.png"/></a>
+  <div id="navbarSupportedContent">
+    <ul class="nav flex-nowrap">
+      <li class="">
+        <form id="search-form" class="form-inline">
+          <input id="search-input" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+        </form>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link py-0" href={% url 'feed-home' %}><i class="bi-house-door" style="font-size: 24px"></i></a>
+      </li>
+      <li class="nav-item">
+        <button class="btn btn-link nav-link py-0 px-0 px-sm-3" style="color: inherit" data-toggle="modal" data-target="#postModal"><i class="bi-plus-square" style="font-size: 22px"></i></button>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link py-0" href="{% url 'profile' user.username %}"><img class="rounded-circle profile-navbar-image" src="{{ user.profile.pic.url }}"> </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+{% block script %}
+{% include "feed/post_modal.html" %}
+<script>
+  document.getElementById("search-form").onsubmit = e => {
+      e.preventDefault()
+      const query = document.getElementById("search-input").value
+      const url = "{% url 'profile' 'profile-value'%}"
+      window.location.href = url.replace('profile-value', query);
+  }
+</script>
+{% endblock script %}

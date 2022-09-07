@@ -1,0 +1,5 @@
+{% if post.likes.count >= 2 %}
+  <p>Liked by <a class="no-hover-underline" href="{% url 'profile' post.likes.first %}"><strong>{{ post.likes.first }}</strong></a> and <strong>{{ post.likes.count|add:"-1" }}</strong> others</p>
+{% elif post.likes.first %}
+  <p>Liked by <a class="no-hover-underline" href="{% url 'profile' post.likes.first %}"><strong>{{ post.likes.first }}</strong></a></p>
+{% endif %}

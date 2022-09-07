@@ -1,0 +1,24 @@
+<div class="modal" id="{{ name }}Modal" tabindex="-1" role="dialog" aria-labelledby="{{ name }}Modal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered mx-auto modal-small">
+    <div class="modal-content" style="overflow: hidden">
+      <div style="max-height: 245px; overflow: auto">
+        <div class="stronger text-center border-bottom w-100" style="height: 42px; line-height: 42px">
+          {{ name|title }}
+        </div>
+        <div class="pt-3">
+          {% for user_profile in users %}{% with user=user_profile.user %}
+            <div class="d-flex flex-row align-items-center smaller pb-3 px-4">
+              <a href="{% url 'profile' user.username %}">
+                <img class="rounded-circle profile-user-list" src="{{ user_profile.pic.url }}">
+              </a>
+              <div class="ml-3">
+                <a class="no-hover-underline" href="{% url 'profile' user.username %}"><div class="font-weight-bold">{{ user }}</div></a>
+                <div class="text-secondary">{{ user.first_name }} {{ user.last_name }}</div>
+              </div>
+            </div>
+          {% endwith %}{% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

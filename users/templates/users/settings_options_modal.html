@@ -1,0 +1,10 @@
+<div class="modal" id="settingsOptionsModal" tabindex="-1" role="dialog" aria-labelledby="settingsOptionsModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered mx-auto modal-small">
+    <div class="modal-content" style="overflow: hidden">
+        <a class="btn btn-static list-group-item w-100" style="color: inherit; height: 48px" href="{% url 'profile-edit' %}">Edit Profile</a>
+        <a class="btn btn-static list-group-item w-100" style="color: inherit; height: 48px" href="{% url 'change-password' %}">Change Password</a>
+      <a class="btn btn-static list-group-item w-100" style="color: inherit; height: 48px" href="{% url 'logout' %}">Logout</a>
+        <button data-dismiss="modal" class="btn btn-static list-group-item w-100" style="color: inherit; height: 48px">Cancel</button>
+    </div>
+  </div>
+</div>
